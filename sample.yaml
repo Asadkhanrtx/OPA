@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-deployment
+  namespace: asad-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-deployment
+  template:
+    metadata:
+      labels:
+        app: sample-deployment
+    spec:
+      containers:
+      - name: fitness-tracker-app
+        image: pulkit197/fitness_tracker-master-copy3-fitness-app:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "25m"
+
+      tolerations:
+      - key: "training"
+        operator: "Equal"
+        value: "devops"
+        effect: "NoSchedule"
