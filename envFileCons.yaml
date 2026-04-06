@@ -1,35 +1,19 @@
 apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
-  name: k8srequiredenv
+  name: k8srequireenvfrom
 spec:
   crd:
     spec:
       names:
-        kind: K8sRequiredEnv
+        kind: K8sRequireEnvFrom
   targets:
   - target: admission.k8s.gatekeeper.sh
     rego: |
-      package k8srequiredenv
+      package k8srequireenvfrom
 
-      # 🔹 POD CHECK
       violation[{"msg": msg}] {
-        input.review.kind.kind == "Pod"
         container := input.review.object.spec.containers[_]
-        not has_env(container.env, "ENV")
-        msg := "Pod container must have ENV variable"
-      }
-
-      # 🔹 DEPLOYMENT CHECK
-      violation[{"msg": msg}] {
-        input.review.kind.kind == "Deployment"
-        container := input.review.object.spec.template.spec.containers[_]
-        not has_env(container.env, "ENV")
-        msg := "Deployment container must have ENV variable"
-      }
-
-      # 🔹 helper function
-      has_env(envs, name) {
-        some i
-        envs[i].name == name
+        not container.envFrom
+        msg := sprintf("Container '%s' must define envFrom", [container.name])
       }

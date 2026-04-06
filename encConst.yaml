@@ -1,5 +1,5 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sRequiredEnv
+kind: k8srequireenvfrom
 metadata:
   name: require-env-variable
 spec:
