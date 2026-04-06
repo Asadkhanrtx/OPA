@@ -25,6 +25,9 @@ spec:
           requests:
             memory: "64Mi"
             cpu: "25m"
+        envFrom:
+        - configMapRef:
+            name: sample-config
 
       tolerations:
       - key: "training"
