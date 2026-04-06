@@ -1,0 +1,51 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequireprobes
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequireProbes
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package k8srequireprobes
+
+      # --------------------
+      # POD CHECK
+      # --------------------
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        container := input.review.object.spec.containers[_]
+
+        not has_probes(container)
+
+        msg := sprintf(
+          "Container '%s' must define both readinessProbe and livenessProbe",
+          [container.name]
+        )
+      }
+
+      # --------------------
+      # DEPLOYMENT CHECK
+      # --------------------
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Deployment"
+        container := input.review.object.spec.template.spec.containers[_]
+
+        not has_probes(container)
+
+        msg := sprintf(
+          "Container '%s' must define both readinessProbe and livenessProbe",
+          [container.name]
+        )
+      }
+
+      # --------------------
+      # HELPER FUNCTION
+      # --------------------
+      has_probes(container) {
+        container.readinessProbe
+        container.livenessProbe
+      }
