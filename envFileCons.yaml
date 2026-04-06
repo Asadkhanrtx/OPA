@@ -1,0 +1,27 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequiredenv
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredEnv
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package k8srequiredenv
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        container := input.review.object.spec.containers[_]
+
+        not has_env(container.env, "ENV")
+
+        msg := "Container must have ENV environment variable defined"
+      }
+
+      has_env(envs, name) {
+        some i
+        envs[i].name == name
+      }

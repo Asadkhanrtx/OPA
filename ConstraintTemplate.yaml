@@ -25,3 +25,4 @@ spec:
         not container.resources.requests
         msg := "Container must have resource requests defined"
       }
+      
