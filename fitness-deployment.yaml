@@ -20,8 +20,18 @@ spec:
         - containerPort: 5000
         resources:
           limits:
-             memory: "256Mi"
-             cpu: "150m"
+            memory: "256Mi"
+            cpu: "150m"
           requests:
             memory: "128Mi"
             cpu: "50m"
+
+      tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+
+      - key: "training"
+        operator: "Equal"
+        value: "devops"
+        effect: "NoSchedule"
