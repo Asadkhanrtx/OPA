@@ -1,9 +1,11 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sRequiredResources
+kind: K8sRequireResources
 metadata:
-  name: require-resources
+  name: require-cpu-memory-requests-limits
 spec:
   match:
     kinds:
     - apiGroups: [""]
       kinds: ["Pod"]
+    - apiGroups: ["apps"]
+      kinds: ["Deployment"]
